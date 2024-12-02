@@ -44,3 +44,10 @@ def run_for[TIn, TOut](
         print("--------------------------------------------------")
         print(f"{example_file.ljust(28) } -> {runner2(example_file)}")
         print(f"{input_file.ljust(28) } -> {runner2(input_file)}")
+
+
+def remove_at[T](input: list[T], i: int) -> list[T]:
+    copy = list(input)
+    del copy[i]
+
+    return copy
