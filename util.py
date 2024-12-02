@@ -15,6 +15,10 @@ def get_input[T](filename: str, parser: Callable[[str], T]):
                 return
 
 
+def get_int_list(line: str):
+    return [int(v) for v in line.split(" ") if v != ""]
+
+
 def get_int_pairs(line: str):
     line_values = [v for v in line.split(" ") if v != ""]
 
