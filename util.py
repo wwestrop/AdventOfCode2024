@@ -21,5 +21,22 @@ def get_int_pairs(line: str):
     return int(line_values[0]), int(line_values[1])
 
 
-def run_for[TIn, TOut](filename: str, runner: Callable[[TIn], TOut]):
-    print(f"{filename.ljust(28) } -> {runner(filename)}")
+def run_for[TIn, TOut](
+    day: int,
+    runner1: Callable[[TIn], TOut],
+    runner2: Callable[[TIn], TOut] | None = None,
+):
+    filename_prefix = "inputs/day"
+    filename_suffix = ".txt"
+
+    day_num = str(day).rjust(2, "0")
+    example_file = filename_prefix + day_num + "-example" + filename_suffix
+    input_file = filename_prefix + day_num + filename_suffix
+
+    print(f"{example_file.ljust(28) } -> {runner1(example_file)}")
+    print(f"{input_file.ljust(28) } -> {runner1(input_file)}")
+
+    if runner2 is not None:
+        print("--------------------------------------------------")
+        print(f"{example_file.ljust(28) } -> {runner2(example_file)}")
+        print(f"{input_file.ljust(28) } -> {runner2(input_file)}")

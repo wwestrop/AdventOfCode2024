@@ -42,10 +42,4 @@ def similarity_score(filename: str):
     return similarity
 
 
-run_for("inputs/day_01/example.txt", pairwise_sum_difference)
-run_for("inputs/day_01/input.txt", pairwise_sum_difference)
-
-print("-" * 50)
-
-run_for("inputs/day_01/example.txt", similarity_score)
-run_for("inputs/day_01/input.txt", similarity_score)
+run_for(1, pairwise_sum_difference, similarity_score)
