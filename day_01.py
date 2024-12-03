@@ -1,9 +1,9 @@
-from util import get_input, get_int_pairs, run_for
+from typing import Iterable
+from util import get_int_pairs, run_for
 
 
-def pairwise_sum_difference(filename: str):
-    lines = list(get_input(filename, get_int_pairs))
-
+def pairwise_sum_difference(lines: Iterable[tuple[int, int]]):
+    lines = list(lines)
     list1 = sorted([v[0] for v in lines])
     list2 = sorted([v[1] for v in lines])
 
@@ -26,9 +26,8 @@ def calculate_incidence_map(list: list[int]):
     return result
 
 
-def similarity_score(filename: str):
-    lines = list(get_input(filename, get_int_pairs))
-
+def similarity_score(lines: Iterable[tuple[int, int]]):
+    lines = list(lines)
     list1 = [v[0] for v in lines]
     list2 = [v[1] for v in lines]
 
@@ -42,4 +41,4 @@ def similarity_score(filename: str):
     return similarity
 
 
-run_for(1, pairwise_sum_difference, similarity_score)
+run_for(1, pairwise_sum_difference, similarity_score, parser=get_int_pairs)

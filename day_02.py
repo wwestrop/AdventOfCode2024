@@ -1,4 +1,5 @@
-from util import get_input, get_int_list, remove_at, run_for
+from typing import Iterable
+from util import get_int_list, remove_at, run_for
 
 
 def get_pairwise_difference(line: list[int]):
@@ -28,14 +29,12 @@ def is_dampenable(unsafe_report: list[int]):
     return False
 
 
-def count_safe_lines(filename: str):
-    lines = get_input(filename, get_int_list)
-
+def count_safe_lines(lines: Iterable[list[int]]):
     return len(list(l for l in lines if is_line_safe(l)))
 
 
-def count_dampenable_safe_lines(filename: str):
-    lines = list(get_input(filename, get_int_list))
+def count_dampenable_safe_lines(lines: Iterable[list[int]]):
+    lines = list(lines)
     unsafe_lines = [l for l in lines if not is_line_safe(l)]
 
     dampenable_count = len([l for l in unsafe_lines if is_dampenable(l)])
@@ -46,4 +45,4 @@ def count_dampenable_safe_lines(filename: str):
     return safe_count
 
 
-run_for(2, count_safe_lines, count_dampenable_safe_lines)
+run_for(2, count_safe_lines, count_dampenable_safe_lines, parser=get_int_list)

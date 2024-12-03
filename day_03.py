@@ -1,11 +1,12 @@
 import re
+from typing import Iterable
 
-from util import get_input, run_for
+from util import run_for
 
 
-def evaluate_instructions(filename: str):
+def evaluate_instructions(lines: Iterable[str]):
     _FUNCTION_FINDER = re.compile("mul\\((?P<op1>\\d{1,3}),(?P<op2>\\d{1,3})\\)")
-    lines = list(get_input(filename))
+    lines = list(lines)
 
     result = 0
 
@@ -19,9 +20,9 @@ def evaluate_instructions(filename: str):
     return result
 
 
-def evaluate_instructions_2(filename: str):
+def evaluate_instructions_2(lines: Iterable[str]):
     _FUNCTION_FINDER = re.compile("(?P<func>[a-z']+)\\((?P<operands>[0-9,]*)\\)")
-    lines = list(get_input(filename))
+    lines = list(lines)
 
     enabled = True
     result = 0
