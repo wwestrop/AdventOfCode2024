@@ -1,7 +1,7 @@
 import re
 from typing import Iterable
 
-from util import run_for
+from util import run
 
 
 def evaluate_instructions(lines: Iterable[str]):
@@ -44,4 +44,4 @@ def evaluate_instructions_2(lines: Iterable[str]):
     return result
 
 
-run_for(3, evaluate_instructions, evaluate_instructions_2)
+run(3, evaluate_instructions, evaluate_instructions_2)

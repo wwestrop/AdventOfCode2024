@@ -1,5 +1,5 @@
 from typing import Iterable
-from util import get_int_pairs, run_for
+from util import get_int_pairs, run
 
 
 def pairwise_sum_difference(lines: Iterable[tuple[int, int]]):
@@ -14,7 +14,7 @@ def pairwise_sum_difference(lines: Iterable[tuple[int, int]]):
     return diff
 
 
-def calculate_incidence_map(list: list[int]):
+def _calculate_incidence_map(list: list[int]):
     result: dict[int, int] = {}
 
     for item in list:
@@ -31,7 +31,7 @@ def similarity_score(lines: Iterable[tuple[int, int]]):
     list1 = [v[0] for v in lines]
     list2 = [v[1] for v in lines]
 
-    incidence_map = calculate_incidence_map(list2)
+    incidence_map = _calculate_incidence_map(list2)
 
     similarity = 0
     for item in list1:
@@ -41,4 +41,4 @@ def similarity_score(lines: Iterable[tuple[int, int]]):
     return similarity
 
 
-run_for(1, pairwise_sum_difference, similarity_score, parser=get_int_pairs)
+run(1, pairwise_sum_difference, similarity_score, parser=get_int_pairs)
