@@ -46,5 +46,4 @@ def count_dampenable_safe_lines(filename: str):
     return safe_count
 
 
-run_for(2, count_safe_lines)
-run_for(2, count_dampenable_safe_lines)
+run_for(2, count_safe_lines, count_dampenable_safe_lines)

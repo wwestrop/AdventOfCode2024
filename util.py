@@ -1,7 +1,11 @@
 from typing import Callable
 
 
-def get_input[T](filename: str, parser: Callable[[str], T]):
+def _no_op(input):
+    return input
+
+
+def get_input[T](filename: str, parser: Callable[[str], T] = _no_op):
     with open(filename) as file:
         line = ""
 
@@ -25,10 +29,10 @@ def get_int_pairs(line: str):
     return int(line_values[0]), int(line_values[1])
 
 
-def run_for[TIn, TOut](
+def run_for[TOut](
     day: int,
-    runner1: Callable[[TIn], TOut],
-    runner2: Callable[[TIn], TOut] | None = None,
+    runner1: Callable[[str], TOut],
+    runner2: Callable[[str], TOut] | None = None,
 ):
     filename_prefix = "inputs/day"
     filename_suffix = ".txt"
