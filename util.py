@@ -90,6 +90,30 @@ def _walk_matrix[T](matrix: list[list[T]], x: int, y: int, distance: int, xdiff:
     return path
 
 
+def walk_x_shape[T](matrix: list[list[T]], x: int, y: int, distance: int):
+    """
+    Walks an X-shape of length `distance`, centered on (x,y)
+    """
+
+    # assume no jagged arrays
+    width = len(matrix[0])
+    height = len(matrix)
+
+    offset = int((distance - 1) / 2)
+
+    if x - offset < 0 or x + offset >= width:
+        return
+
+    if y - offset < 0 or y + offset >= height:
+        return
+
+    # /
+    yield _walk_matrix(matrix, x - offset, y + offset, distance, xdiff=1, ydiff=-1)
+
+    # \
+    yield _walk_matrix(matrix, x - offset, y - offset, distance, xdiff=1, ydiff=1)
+
+
 def walk_compass_directions[T](matrix: list[list[T]], x: int, y: int, distance: int):
     """
     Starting at the point (x,y), walk the specified distance in each of the
@@ -105,22 +129,20 @@ def walk_compass_directions[T](matrix: list[list[T]], x: int, y: int, distance: 
     # North East
     yield _walk_matrix(matrix, x, y, distance, xdiff=1, ydiff=-1)
 
-    # # East
+    # East
     yield _walk_matrix(matrix, x, y, distance, xdiff=1, ydiff=0)
 
     # South East
     yield _walk_matrix(matrix, x, y, distance, xdiff=1, ydiff=1)
 
-    # # South
+    # South
     yield _walk_matrix(matrix, x, y, distance, xdiff=0, ydiff=1)
 
-    # # South West
+    # South West
     yield _walk_matrix(matrix, x, y, distance, xdiff=-1, ydiff=1)
 
-    # # West
+    # West
     yield _walk_matrix(matrix, x, y, distance, xdiff=-1, ydiff=0)
 
     # North West
     yield _walk_matrix(matrix, x, y, distance, xdiff=-1, ydiff=-1)
-
-    pass
