@@ -14,8 +14,22 @@ def topological_sort[T](edges: list[tuple[T, T]]):
     return list(sorter.static_order())
 
 
-def _is_manual_sorted(manual_pages: list[int], proper_page_order: list[int]):
-    return list(ordered_list_intersect(proper_page_order, manual_pages)) == manual_pages
+def _vertex_filter[T](graph: list[tuple[T, T]], relevant_vertices: list[T]):
+    """
+    For the given graph, strip out every vertex and its edges unless
+    they are in the `relevant_vertices` list, and return the new graph
+    """
+    return [e for e in graph if e[0] in relevant_vertices and e[1] in relevant_vertices]
+
+
+def _is_manual_sorted(manual_pages: list[int], page_order_graph: list[tuple[int, int]]):
+    relevant_graph = _vertex_filter(page_order_graph, manual_pages)
+
+    proper_page_order = topological_sort(relevant_graph)
+
+    relevant_proper_page_order = list(ordered_list_intersect(proper_page_order, manual_pages))
+
+    return relevant_proper_page_order == manual_pages
 
 
 def sum_middle_pages_of_ordered_manuals(lines: Iterable[str]):
@@ -29,9 +43,7 @@ def sum_middle_pages_of_ordered_manuals(lines: Iterable[str]):
     manuals = [p.split(",") for p in raw_manuals]
     manuals = [[int(p) for p in e] for e in manuals]
 
-    proper_page_order = topological_sort(edges)
-
-    sorted_manuals = [m for m in manuals if _is_manual_sorted(m, proper_page_order)]
+    sorted_manuals = [m for m in manuals if _is_manual_sorted(m, edges)]
 
     midpoints = [x[int(len(x) / 2)] for x in sorted_manuals]
 
