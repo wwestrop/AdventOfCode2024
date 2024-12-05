@@ -26,16 +26,21 @@ def _is_manual_sorted(manual_pages: list[int], page_order_graph: list[tuple[int,
     return _get_proper_sort_order(manual_pages, page_order_graph) == manual_pages
 
 
-def sum_middle_pages_of_ordered_manuals(lines: Iterable[str]):
-    # my plan of a generic parser for the input failed, this input comes in two parts
-    # so here I am sorting it within the day's method
-
+# my plan of a generic parser for the input failed, as it assumes parsing is done linewise.
+# this input comes in two parts, so I'm doing it within the day's solution
+def _parse_input(lines: Iterable[str]):
     raw_edges, raw_manuals = list(split_sequence(lines, ""))
 
     edges = [l.split("|") for l in raw_edges]
     edges = [(int(e[0]), int(e[1])) for e in edges]
     manuals = [p.split(",") for p in raw_manuals]
     manuals = [[int(p) for p in e] for e in manuals]
+
+    return edges, manuals
+
+
+def sum_middle_pages_of_ordered_manuals(lines: Iterable[str]):
+    edges, manuals = _parse_input(lines)
 
     sorted_manuals = [m for m in manuals if _is_manual_sorted(m, edges)]
 
@@ -45,12 +50,7 @@ def sum_middle_pages_of_ordered_manuals(lines: Iterable[str]):
 
 
 def reorder_manuals(lines: Iterable[str]):
-    raw_edges, raw_manuals = list(split_sequence(lines, ""))
-
-    edges = [l.split("|") for l in raw_edges]
-    edges = [(int(e[0]), int(e[1])) for e in edges]
-    manuals = [p.split(",") for p in raw_manuals]
-    manuals = [[int(p) for p in e] for e in manuals]
+    edges, manuals = _parse_input(lines)
 
     unsorted_manuals = [m for m in manuals if not _is_manual_sorted(m, edges)]
 
