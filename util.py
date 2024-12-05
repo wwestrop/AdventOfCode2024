@@ -12,9 +12,9 @@ def _get_input[T](filename: str, parser: Callable[[str], T]) -> Iterable[T]:
 
         while True:
             line = file.readline()
-            line = line.replace("\r", "").replace("\n", "")
 
             if line != "":
+                line = line.replace("\r", "").replace("\n", "")
                 yield parser(line)
             else:
                 return
@@ -146,3 +146,25 @@ def walk_compass_directions[T](matrix: list[list[T]], x: int, y: int, distance: 
 
     # North West
     yield _walk_matrix(matrix, x, y, distance, xdiff=-1, ydiff=-1)
+
+
+def split_sequence[T](input: Iterable[T], splitter: T):
+    accumulator = []
+
+    for i in input:
+        if i == splitter:
+            yield accumulator
+            accumulator = []
+        else:
+            accumulator.append(i)
+
+    yield accumulator
+
+
+def ordered_list_intersect(list1: list, list2: list):
+    """
+    Finds the comment elements between two lists, keeping list1 in the same order
+    """
+    for x in list1:
+        if x in list2:
+            yield x
