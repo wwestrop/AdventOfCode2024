@@ -1,6 +1,7 @@
 from typing import Iterable
 
-from util import run, walk_compass_directions, walk_x_shape
+from util.driver import run
+from util.matrix import walk_compass_directions, walk_x_shape
 
 
 def find_xmas(lines: Iterable[list[str]]):

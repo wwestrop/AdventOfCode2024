@@ -1,5 +1,7 @@
 from typing import Iterable
-from util import get_int_pairs, run
+
+from util.driver import run
+from util.parser import get_int_pairs
 
 
 def pairwise_sum_difference(lines: Iterable[tuple[int, int]]):

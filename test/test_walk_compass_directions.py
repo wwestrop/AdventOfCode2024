@@ -1,4 +1,4 @@
-from util import walk_compass_directions
+from src.util.matrix import walk_compass_directions
 
 
 def test_walk_compass_happy_path():

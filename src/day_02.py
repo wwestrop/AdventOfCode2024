@@ -1,5 +1,8 @@
 from typing import Iterable
-from util import get_int_list, remove_at, run
+
+from util.collections import remove_at
+from util.driver import run
+from util.parser import get_int_list
 
 
 def get_pairwise_difference(line: list[int]):

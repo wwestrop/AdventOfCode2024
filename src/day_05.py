@@ -1,17 +1,7 @@
-from graphlib import TopologicalSorter
 from typing import Iterable
 
-from util import ordered_list_intersect, run, split_sequence
-
-
-def topological_sort[T](edges: list[tuple[T, T]]):
-    vertices = set([e[0] for e in edges] + [e[1] for e in edges])
-
-    vertex_predecessor_dict = {v: [e[0] for e in edges if e[1] == v] for v in vertices}
-
-    sorter = TopologicalSorter(vertex_predecessor_dict)
-
-    return list(sorter.static_order())
+from util.collections import ordered_list_intersect, split_sequence, topological_sort
+from util.driver import run
 
 
 def _vertex_filter[T](graph: list[tuple[T, T]], relevant_vertices: list[T]):

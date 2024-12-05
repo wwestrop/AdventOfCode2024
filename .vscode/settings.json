@@ -2,7 +2,9 @@
     "explorer.excludeGitIgnore": true,
     "editor.formatOnSave": true,
     "python.analysis.typeCheckingMode": "standard",
-    "python.testing.pytestArgs": [],
+    "python.testing.pytestArgs": [
+        "test"
+    ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
 }

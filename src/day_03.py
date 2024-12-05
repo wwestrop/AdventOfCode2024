@@ -1,7 +1,7 @@
 import re
 from typing import Iterable
 
-from util import run
+from util.driver import run
 
 
 def evaluate_instructions(lines: Iterable[str]):
