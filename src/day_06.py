@@ -72,11 +72,12 @@ def part_2(lines: Iterable[str]):
         raise "shouldnt happen for the examples i'm given, but generic find method might be used where it could"
 
     obstacle_map = [[cell == "#" for cell in line] for line in raw_map]
-    visited_directions: list[list[Direction | None]] = [[None for cell in line] for line in raw_map]
+    visited_directions: list[list[set[Direction]]] = [[set() for cell in line] for line in raw_map]
     direction = _get_direction(raw_map[position[1]][position[0]])
-    visited_directions[position[1]][position[0]] = direction
     if not direction:
         raise "shouldnt happen for the examples i'm given"
+
+    visited_directions[position[1]][position[0]] = set([direction])
 
     new_obstacle_candidates = []
 
@@ -101,7 +102,7 @@ def part_2(lines: Iterable[str]):
             )
         )
 
-        if rot90 in rot90_path:
+        if any(True for cell in rot90_path if rot90 in cell):
             # put an obstacle in front
             new_obstacle_candidates.append(cell_in_front)
 
@@ -115,7 +116,7 @@ def part_2(lines: Iterable[str]):
             direction = ROT_90[direction]
         else:
             position = cell_in_front
-            visited_directions[cell_in_front[1]][cell_in_front[0]] = direction
+            visited_directions[cell_in_front[1]][cell_in_front[0]].add(direction)
 
 
 run(6, part_1, part_2)
