@@ -83,10 +83,10 @@ def part_2(lines: Iterable[str]):
     while True:
         cell_in_front = apply_offset(position, direction.offset)
         if is_out_of_bounds(obstacle_map, cell_in_front):
-            assert (
-                len(set(new_obstacle_candidates)) == len(new_obstacle_candidates)
-            ), "I shouldn't really be marking the same twice, why am I? Possibly an obstacle can be placed such that it causes loops when hit from multiple directions?"
-            return len(new_obstacle_candidates)
+            # assert (
+            #     len(set(new_obstacle_candidates)) == len(new_obstacle_candidates)
+            # ), "I shouldn't really be marking the same twice, why am I? Possibly an obstacle can be placed such that it causes loops when hit from multiple directions?"
+            return len(set(new_obstacle_candidates))
 
         # if at any point, turning 90 would have me walk into something in a direction i've already been...
         x, y = position[0], position[1]
@@ -103,6 +103,12 @@ def part_2(lines: Iterable[str]):
 
         if rot90 in rot90_path:
             # put an obstacle in front
+            new_obstacle_candidates.append(cell_in_front)
+
+        # if, after turning 90, and at the end of that path is an obstacle causing
+        # us to turn another 90, and the previously walked direction along that path
+        # was in that same direction, then this is another obstacle candidate
+        if len(rot90_path) > 0 and rot90_path[-1] == ROT_90[rot90]:
             new_obstacle_candidates.append(cell_in_front)
 
         if obstacle_map[cell_in_front[1]][cell_in_front[0]]:
