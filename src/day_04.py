@@ -1,15 +1,13 @@
 from typing import Iterable
 
 from util.driver import run
-from util.matrix import walk_compass_directions, walk_x_shape
+from util.matrix import get_dimensions, walk_compass_directions, walk_x_shape
 
 
 def find_xmas(lines: Iterable[list[str]]):
     matrix = list(lines)
 
-    # assume no jagged arrays
-    width = len(matrix[0])
-    height = len(matrix)
+    width, height = get_dimensions(matrix)
 
     SOUGHT_WORD = list("XMAS")
 
@@ -27,9 +25,7 @@ def find_xmas(lines: Iterable[list[str]]):
 def find_x_shaped_mas(lines: Iterable[list[str]]):
     matrix = list(lines)
 
-    # assume no jagged arrays
-    width = len(matrix[0])
-    height = len(matrix)
+    width, height = get_dimensions(matrix)
 
     SOUGHT_WORD = list("MAS")
     BACKWARDS_SOUGHT_WORD = list(reversed("MAS"))

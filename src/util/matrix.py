@@ -1,10 +1,62 @@
+from typing import Callable, TypeAlias
+
+
+Point: TypeAlias = tuple[int, int]
+
+
+def get_dimensions(matrix: list[list]):
+    # assume no jagged arrays
+    width = len(matrix[0])
+    height = len(matrix)
+
+    return width, height
+
+
+def is_out_of_bounds(matrix: list[list], point: Point):
+    width, height = get_dimensions(matrix)
+
+    x, y = point[0], point[1]
+    if x < 0 or x > width - 1:
+        return True
+
+    if y < 0 or y > height - 1:
+        return True
+
+    return False
+
+
+def find[T](matrix: list[list[T]], predicate: Callable[[T], bool]) -> Point | None:
+    width, height = get_dimensions(matrix)
+
+    for y in range(height):
+        for x in range(width):
+            if predicate(matrix[y][x]):
+                return (x, y)
+
+    return None
+
+
+def count[T](matrix: list[list[T]], predicate: Callable[[T], bool]) -> int:
+    width, height = get_dimensions(matrix)
+
+    count = 0
+    for y in range(height):
+        for x in range(width):
+            if predicate(matrix[y][x]):
+                count += 1
+
+    return count
+
+
+def apply_offset(position: Point, offset: tuple[int, int]):
+    return (position[0] + offset[0], position[1] + offset[1])
+
+
 def _walk_matrix[T](matrix: list[list[T]], x: int, y: int, distance: int, xdiff: int, ydiff: int):
     # we include the current cell in the distance
     distance = distance - 1
 
-    # assume no jagged arrays
-    width = len(matrix[0])
-    height = len(matrix)
+    width, height = get_dimensions(matrix)
 
     if x + xdiff * distance < 0 or x + xdiff * distance >= width:
         return
@@ -27,9 +79,7 @@ def walk_x_shape[T](matrix: list[list[T]], x: int, y: int, distance: int):
     Walks an X-shape of length `distance`, centered on (x,y)
     """
 
-    # assume no jagged arrays
-    width = len(matrix[0])
-    height = len(matrix)
+    width, height = get_dimensions(matrix)
 
     offset = int((distance - 1) / 2)
 
