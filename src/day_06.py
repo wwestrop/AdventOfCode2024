@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable, TypeAlias
 
-from util.matrix import apply_offset, count, find, is_out_of_bounds
+from util.matrix import walk_matrix_unbounded, apply_offset, count, find, is_out_of_bounds
 from util.driver import run
 
 
@@ -64,4 +64,42 @@ def part_1(lines: Iterable[str]):
             visited[cell_in_front[1]][cell_in_front[0]] = True
 
 
-run(6, part_1)
+def part_2(lines: Iterable[str]):
+    raw_map = [[cell for cell in line] for line in lines]
+
+    position = find(raw_map, lambda c: c in ["^", ">", "v", "<"])
+    if not position:
+        raise "shouldnt happen for the examples i'm given, but generic find method might be used where it could"
+
+    obstacle_map = [[cell == "#" for cell in line] for line in raw_map]
+    visited_directions: list[list[Direction | None]] = [[None for cell in line] for line in raw_map]
+    direction = _get_direction(raw_map[position[1]][position[0]])
+    visited_directions[position[1]][position[0]] = direction
+    if not direction:
+        raise "shouldnt happen for the examples i'm given"
+
+    new_obstacle_candidates = []
+
+    while True:
+        cell_in_front = apply_offset(position, direction.offset)
+        if is_out_of_bounds(obstacle_map, cell_in_front):
+            return len(new_obstacle_candidates)
+
+        # if at any point, turning 90 would have me walk into something in a direction i've already been...
+        x, y = position[0], position[1]
+        rot90 = ROT_90[direction]
+        rot90_path = list(walk_matrix_unbounded(visited_directions, x, y, rot90.offset[0], rot90.offset[1]))
+
+        if rot90 in rot90_path:
+            # put an obstacle in front
+            cell_two_in_front = apply_offset(cell_in_front, direction.offset)
+            new_obstacle_candidates.append(cell_two_in_front)
+
+        if obstacle_map[cell_in_front[1]][cell_in_front[0]]:
+            direction = ROT_90[direction]
+        else:
+            position = cell_in_front
+            visited_directions[cell_in_front[1]][cell_in_front[0]] = direction
+
+
+run(6, part_1, part_2)
