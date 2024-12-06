@@ -52,6 +52,24 @@ def apply_offset(position: Point, offset: tuple[int, int]):
     return (position[0] + offset[0], position[1] + offset[1])
 
 
+def walk_matrix_until[T](
+    matrix: list[list[T]],
+    point: Point,
+    xdiff: int,
+    ydiff: int,
+    until: Callable[[int, int, T], bool],
+):
+    point = apply_offset(point, (xdiff, ydiff))
+
+    while not is_out_of_bounds(matrix, point):
+        if until(point[0], point[1], matrix[point[1]][point[0]]):
+            return
+
+        yield matrix[point[1]][point[0]]
+
+        point = apply_offset(point, (xdiff, ydiff))
+
+
 def walk_matrix_unbounded[T](matrix: list[list[T]], x: int, y: int, xdiff: int, ydiff: int):
     point = (x, y)
     point = apply_offset(point, (xdiff, ydiff))

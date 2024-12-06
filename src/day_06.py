@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable, TypeAlias
 
-from util.matrix import walk_matrix_unbounded, apply_offset, count, find, is_out_of_bounds
+from util.matrix import apply_offset, count, find, is_out_of_bounds, walk_matrix_until
 from util.driver import run
 
 
@@ -83,17 +83,27 @@ def part_2(lines: Iterable[str]):
     while True:
         cell_in_front = apply_offset(position, direction.offset)
         if is_out_of_bounds(obstacle_map, cell_in_front):
+            assert (
+                len(set(new_obstacle_candidates)) == len(new_obstacle_candidates)
+            ), "I shouldn't really be marking the same twice, why am I? Possibly an obstacle can be placed such that it causes loops when hit from multiple directions?"
             return len(new_obstacle_candidates)
 
         # if at any point, turning 90 would have me walk into something in a direction i've already been...
         x, y = position[0], position[1]
         rot90 = ROT_90[direction]
-        rot90_path = list(walk_matrix_unbounded(visited_directions, x, y, rot90.offset[0], rot90.offset[1]))
+        rot90_path = list(
+            walk_matrix_until(
+                visited_directions,
+                (x, y),
+                rot90.offset[0],
+                rot90.offset[1],
+                lambda x, y, c: obstacle_map[y][x] is True,
+            )
+        )
 
         if rot90 in rot90_path:
             # put an obstacle in front
-            cell_two_in_front = apply_offset(cell_in_front, direction.offset)
-            new_obstacle_candidates.append(cell_two_in_front)
+            new_obstacle_candidates.append(cell_in_front)
 
         if obstacle_map[cell_in_front[1]][cell_in_front[0]]:
             direction = ROT_90[direction]

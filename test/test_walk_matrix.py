@@ -1,4 +1,4 @@
-from src.util.matrix import walk_compass_directions
+from src.util.matrix import walk_compass_directions, walk_matrix_until
 
 
 def test_walk_compass_happy_path():
@@ -43,3 +43,23 @@ def test_walk_compass_not_enough_space_in_any_direction():
 
     assert len(directions) == 8
     assert len([d for d in directions if d is None]) == 8
+
+
+def test_walk_matrix_until():
+    matrix = [
+        [".", ".", ""],
+        [".", ".", ""],
+        [".", ".", ""],
+        [".", "#", ""],
+        [".", "2", ""],
+        [".", "1", ""],
+        [".", "S", ""],
+        [".", ".", ""],
+        [".", ".", ""],
+    ]
+
+    assert matrix[6][1] == "S"
+
+    result = list(walk_matrix_until(matrix, (1, 6), 0, -1, lambda x, y, c: c == "#"))
+
+    assert result == ["1", "2"]
