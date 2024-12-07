@@ -33,12 +33,14 @@ def _generate_operator_combos(possible_operators: list[str], number_of_operators
         yield operator_combo
 
 
-def _evaluate(input: list):
-    accum = input[0]
+def _evaluate(input: Iterable, target: int):
+    accum = 0
 
     operator = "+"
-    for x in input[1:]:
-        if x == "+":
+    for x in input:
+        if accum > target:
+            return None
+        elif x == "+":
             operator = "+"
         elif x == "*":
             operator = "*"
@@ -61,7 +63,7 @@ def _has_solution(input: Input, possible_operators: list[str]):
 
     for combo in operator_combos:
         candidate_equation = intersperse(input.operands, combo)
-        if _evaluate(candidate_equation) == input.target:
+        if _evaluate(candidate_equation, input.target) == input.target:
             return True
 
     return False

@@ -41,17 +41,13 @@ def topological_sort[T](edges: list[tuple[T, T]]):
     return list(sorter.static_order())
 
 
-def intersperse(list: list, intersperse_with: list):
+def intersperse(list: list, intersperse_with: list) -> Iterable:
     """
     Merge one list into another, putting elements from the second array in between
     elements in the first. Kind of like a zipper, except zip() already does something else
     """
-    result = []
-
     for i in range(len(list)):
-        result.append(list[i])
+        yield list[i]
 
         if i < len(intersperse_with):
-            result.append(intersperse_with[i])
-
-    return result
+            yield intersperse_with[i]
