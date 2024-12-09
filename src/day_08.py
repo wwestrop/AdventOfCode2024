@@ -11,6 +11,7 @@ def part_1(input_lines: Iterable[str]):
     emitter_map = Matrix(input)
 
     raw_frequency_locations = [t for t in emitter_map.visit(lambda p, i: (p, i)) if t[1] != "."]
+    raw_frequency_locations = sorted(raw_frequency_locations, key=lambda f: f[1])
     frequency_lookup = groupby(raw_frequency_locations, lambda f: f[1])
 
     antinode_map = Matrix.create_empty(emitter_map.width(), emitter_map.height(), default_value=False)
