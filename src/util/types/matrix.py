@@ -11,7 +11,6 @@ class Matrix[T]:
 
     def __getitem__(self, item: Point):
         return self.__matrix[item.y][item.x]
-        pass
 
     def __setitem__(self, item: Point, value: T):
         self.__matrix[item.y][item.x] = value
@@ -51,3 +50,13 @@ class Matrix[T]:
             return True
 
         return False
+
+    def walk_matrix(self, point: Point, diff: Point):
+        """
+        Creates a straight "path" through the matrix, from the given point, stepping over `diff` with each step
+        """
+        point = point + diff
+        while not self.is_out_of_bounds(point):
+            yield point
+
+            point = point + diff
