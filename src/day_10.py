@@ -61,6 +61,20 @@ def _can_walk(edges: dict[Point, set[Point]], start: Point, end: Point, current_
     return False
 
 
+def _rate_trail(edges: dict[Point, set[Point]], start: Point, end: Point, current_path_len=0, num_routes=0) -> int:
+    if start == end:
+        return 1
+
+    if current_path_len > 9:
+        return 0
+
+    out_vertices = edges[start] if start in edges else []
+    for v in out_vertices:
+        num_routes += _rate_trail(edges, v, end, current_path_len + 1, 0)
+
+    return num_routes
+
+
 def part_1(lines: Iterable[list[int]]):
     map = Matrix(list(lines))
 
@@ -79,4 +93,21 @@ def part_1(lines: Iterable[list[int]]):
     return count_routes
 
 
-run(10, part_1, parser=lambda line: [int(c) for c in line])
+def part_2(lines: Iterable[list[int]]):
+    map = Matrix(list(lines))
+
+    trail_starts = [p for p, h in map.visit(lambda p, h: (p, h)) if h == 0]
+    trail_ends = [p for p, h in map.visit(lambda p, h: (p, h)) if h == 9]
+
+    graph = _build_graph(map)
+
+    rating_sum = 0
+
+    for s in trail_starts:
+        for e in trail_ends:
+            rating_sum += _rate_trail(graph, s, e)
+
+    return rating_sum
+
+
+run(10, part_1, part_2, parser=lambda line: [int(c) for c in line])
