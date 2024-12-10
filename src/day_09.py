@@ -63,6 +63,14 @@ def _write_gap(disk: list[int], gap_length: int):
         disk.append(-1)
 
 
+def _find_first_contiguous_gap(gaps: list[Gap], file: File):
+    for g in gaps:
+        if g.size >= file.size:
+            return g
+
+    return None
+
+
 def _find_next_gap(gaps: list[Gap], current_gap_index: int):
     """
     Get the next available gap with space in it. Could be the the current gap if it's not full
@@ -81,12 +89,14 @@ def _checksum(disk: list[int]):
     accum = 0
 
     for i in range(len(disk)):
-        if disk[i] == -1:
-            return accum
-        else:
+        if disk[i] != -1:
             accum += i * disk[i]
 
     return accum
+
+
+def _can_move(gaps: list[Gap], file: File):
+    return any(g for g in gaps if g.size >= file.size)
 
 
 def part_1(lines: Iterable[tuple[list[int], list[File], list[Gap]]]):
@@ -121,4 +131,30 @@ def part_1(lines: Iterable[tuple[list[int], list[File], list[Gap]]]):
     return _checksum(disk)
 
 
-run(9, part_1, parser=_initialise_disk)
+def part_2(lines: Iterable[tuple[list[int], list[File], list[Gap]]]):
+    disk, files, gaps = list(lines)[0]
+
+    moveable_files = files[1:]
+    file_index = len(moveable_files) - 1
+
+    file = moveable_files[file_index]
+    gap: Gap = _find_first_contiguous_gap(gaps, file)
+    while any(_can_move(gaps, f) for f in moveable_files):
+        for f in reversed(moveable_files):
+            gap = _find_first_contiguous_gap(gaps, f)
+
+            if gap is not None:
+                amount_to_write = f.size
+
+                _overwrite_file(disk, gap.ptr, f.id, amount_to_write)
+                _deallocate_from_file(disk, f, amount_to_write)
+
+                gap.size -= amount_to_write
+                gap.ptr += amount_to_write
+                f.size -= amount_to_write
+                moveable_files.remove(f)
+
+    return _checksum(disk)
+
+
+run(9, part_1, part_2, parser=_initialise_disk)
