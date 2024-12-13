@@ -3,6 +3,18 @@ from util.types.point import Point
 from util.matrix import get_dimensions
 
 
+_LEFT = Point(-1, 0)
+_UP = Point(0, -1)
+_RIGHT = Point(1, 0)
+_DOWN = Point(0, 1)
+_X_Y_DIRECTIONS = [
+    _UP,
+    _DOWN,
+    _LEFT,
+    _RIGHT,
+]
+
+
 class Matrix[T]:
     __matrix: list[list[T]]
 
@@ -60,3 +72,6 @@ class Matrix[T]:
             yield point
 
             point = point + diff
+
+    def x_y_adjacent(self, p: Point):
+        return [p + c for c in _X_Y_DIRECTIONS if not self.is_out_of_bounds(p + c)]
