@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Iterable
 from util.types.point import Point
 from util.driver import run
+from PIL import Image
 
 
 @dataclass
@@ -42,6 +43,21 @@ def _step(robot: Robot, width: int, height: int):
     robot.position = Point(x, y)
 
 
+def _write_image(robots: list[Robot], width, height):
+    grid = [[False for x in range(width)] for y in range(height)]
+    image = Image.new("RGB", (width, height), (255, 255, 255))
+
+    for r in robots:
+        grid[r.position.y][r.position.x] = True
+
+    for y in range(height):
+        for x in range(width):
+            if grid[y][x]:
+                image.putpixel((x, y), (0, 0, 0))
+
+    return image
+
+
 def _get_quadrants(robots: list[Robot], width, height):
     center_x, center_y = int(width / 2), int(height / 2)
 
@@ -76,4 +92,31 @@ def part_1(lines: Iterable[str]):
     return safety_margin
 
 
-run(14, part_1)
+def _is_likely_tree(robots: list[Robot], width, height):
+    center = int(width / 2)
+    FUDGE = 4
+    # if the central column is mostly full
+    count_center = len([r for r in robots if r.position.x > center - FUDGE and r.position.x < center + FUDGE])
+
+    return count_center > 50
+
+
+def part_2(lines: Iterable[str]):
+    robots = [_parse(l) for l in lines]
+
+    width = list(sorted(r.position.x for r in robots))[-1] + 1
+    height = list(sorted(r.position.y for r in robots))[-1] + 1
+
+    for step in range(9000):
+        for r in robots:
+            _step(r, width, height)
+
+        if _is_likely_tree(robots, width, height):
+            print(f"{step + 1} a possible tree")
+            image = _write_image(robots, width, height)
+            image.save(f"images/{str(step + 1).rjust(4, "0")}.png")
+
+    return "I'm going to check these by eye, there's no output here. Unless you want machine vision"
+
+
+run(14, part_1, part_2)
