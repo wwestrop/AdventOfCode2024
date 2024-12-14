@@ -44,16 +44,10 @@ def _step(robot: Robot, width: int, height: int):
 
 
 def _write_image(robots: list[Robot], width, height):
-    grid = [[False for x in range(width)] for y in range(height)]
     image = Image.new("RGB", (width, height), (255, 255, 255))
 
     for r in robots:
-        grid[r.position.y][r.position.x] = True
-
-    for y in range(height):
-        for x in range(width):
-            if grid[y][x]:
-                image.putpixel((x, y), (0, 0, 0))
+        image.putpixel((r.position.x, r.position.y), (0, 0, 0))
 
     return image
 
