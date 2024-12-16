@@ -49,6 +49,12 @@ class Matrix[T]:
     def height(self):
         return get_dimensions(self.__matrix)[1]
 
+    def find(self, callback: Callable[[Point, T], bool]):
+        for y in range(self.height()):
+            for x in range(self.width()):
+                if callback(Point(x, y), self.__matrix[y][x]):
+                    yield Point(x, y), self.__matrix[y][x]
+
     def visit(self, callback: Callable[[Point, T], Any]):
         for y in range(self.height()):
             for x in range(self.width()):
