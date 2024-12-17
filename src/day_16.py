@@ -28,6 +28,19 @@ class Vertex:
     point: Point
     direction: Point
 
+    def __repr__(self):
+        direction = (
+            "UP"
+            if self.direction == UP
+            else "RIGHT"
+            if self.direction == RIGHT
+            else "DOWN"
+            if self.direction == DOWN
+            else "LEFT"
+        )
+
+        return f"({self.point.x},{self.point.y}) {direction}"
+
 
 @dataclass(frozen=True)
 class Edge:
@@ -88,26 +101,26 @@ def _build_cell_vertices(
     ]
 
 
-def _build_from_cell(
+def _build_cell_vertex_quads(
     maze: Matrix[str],
-    cell: Point,
-    unvisited: set[Point],
     directed_graph: graph,
 ):
-    if maze.is_out_of_bounds(cell):
-        return
+    """
+    Each cell is represented as a vertex quad, one for each compass direction, with an expesive edge to rotate 90° between them.
+    Cheaper edges to walk between quads (in the direction of that part of the quad) are added later
+    """
+    unvisited = {p for p, s in maze.find(lambda p, s: s != "#")}
 
-    if maze[cell] == "#":
-        return
+    while any(unvisited):
+        cell = unvisited.pop()
 
-    if cell not in unvisited:
-        return
+        if maze.is_out_of_bounds(cell):
+            continue
 
-    unvisited.remove(cell)
+        if maze[cell] == "#":
+            continue
 
-    new_vertices = _build_cell_vertices(cell, directed_graph)
-    for v in new_vertices:
-        _build_from_cell(maze, cell + v.direction, unvisited, directed_graph)
+        _build_cell_vertices(cell, directed_graph)
 
 
 def _build_point_vertex_lookup(directed_graph: graph):
@@ -149,6 +162,16 @@ def _connect_cells(maze: Matrix[str], cell: Point, unvisited: set[Point], direct
             directed_graph[vertex].append(Edge(src=vertex, dst=linker, cost=1))
 
 
+def _find_shortest_unvisited(costs: dict[Vertex, int], unvisited: set[Vertex]):
+    shortest_found: tuple[Vertex, int] = (None, 999999999999)
+    for v in costs:
+        if v in unvisited:
+            if costs[v] < shortest_found[1]:
+                shortest_found = (v, costs[v])
+
+    return shortest_found[0]
+
+
 def _shortest_paths(directed_graph: defaultdict[Vertex, list[Edge]], start: Vertex) -> dict[Vertex, int]:
     unvisited = set(directed_graph.keys())
 
@@ -156,7 +179,7 @@ def _shortest_paths(directed_graph: defaultdict[Vertex, list[Edge]], start: Vert
     dist_from_start[start] = 0
 
     while any(unvisited):
-        curr_node = list(sorted([(dist_from_start[u], u) for u in unvisited], key=lambda u: u[0]))[0][1]
+        curr_node = _find_shortest_unvisited(dist_from_start, unvisited)
         curr_node_dist = dist_from_start[curr_node]
 
         for edge in directed_graph[curr_node]:
@@ -164,6 +187,8 @@ def _shortest_paths(directed_graph: defaultdict[Vertex, list[Edge]], start: Vert
                 dist_from_start[edge.dst] = min(dist_from_start[edge.dst], curr_node_dist + edge.cost)
 
         unvisited.remove(curr_node)
+        if len(unvisited) % 100 == 0:
+            print(f"Visited {len(directed_graph) - len(unvisited)} / {len(directed_graph)}")
 
     return dist_from_start
 
@@ -177,7 +202,7 @@ def part_1(lines: Iterable[list[str]]):
     end_point = [c[0] for c in maze.find(lambda p, s: s == "E")][0]
 
     directed_graph = defaultdict[Vertex, list[Edge]](list[Edge])
-    _build_from_cell(maze, start_point, set(unvisited_cells), directed_graph)
+    _build_cell_vertex_quads(maze, directed_graph)
     _connect_cells(maze, start_point, set(unvisited_cells), directed_graph)
 
     point_vertex_lookup = _build_point_vertex_lookup(directed_graph)
