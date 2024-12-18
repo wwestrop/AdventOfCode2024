@@ -52,13 +52,25 @@ class Matrix[T]:
     def find(self, callback: Callable[[Point, T], bool]):
         for y in range(self.height()):
             for x in range(self.width()):
-                if callback(Point(x, y), self.__matrix[y][x]):
-                    yield Point(x, y), self.__matrix[y][x]
+                p = Point(x, y)
+                if callback(p, self[p]):
+                    yield p, self[p]
 
     def visit(self, callback: Callable[[Point, T], Any]):
         for y in range(self.height()):
             for x in range(self.width()):
-                yield callback(Point(x, y), self.__matrix[y][x])
+                p = Point(x, y)
+                yield callback(p, self[p])
+
+    def transform(self, transform: Callable[[Point, T], Any]):
+        new_matrix = Matrix([[None for x in range(self.width())] for y in range(self.height())])
+
+        for y in range(self.height()):
+            for x in range(self.width()):
+                p = Point(x, y)
+                new_matrix[p] = transform(p, self[p])
+
+        return new_matrix
 
     def is_out_of_bounds(self, p: Point):
         if p.x < 0 or p.x > self.width() - 1:
