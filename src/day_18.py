@@ -76,11 +76,15 @@ def _shortest_paths(directed_graph: defaultdict[Point, set[Point]], start: Point
     return dist_from_start
 
 
-def part_1(points: Iterable[Point]):
+def _corrupt_memory(corrupt_grid: Matrix, points: Iterable[Point]):
+    for p in list(points):
+        corrupt_grid[p] = True
+
+
+def part_1(corruptions: Iterable[Point]):
     max = 70
     corrupt_grid = Matrix([[False for x in range(max + 1)] for y in range(max + 1)])
-    for p in list(points)[:1024]:
-        corrupt_grid[p] = True
+    _corrupt_memory(corrupt_grid, list(corruptions)[:1024])
 
     start = Point(0, 0)
     end = Point(max, max)
@@ -90,4 +94,51 @@ def part_1(points: Iterable[Point]):
     return shortest_paths[end]
 
 
-run(18, part_1, parser=get_points)
+def _binary_search(
+    start: Point,
+    end: Point,
+    corruptions: list[Point],
+):
+    grid_max = 70
+
+    start = Point(0, 0)
+    end = Point(grid_max, grid_max)
+
+    min = 0
+    max = len(corruptions)
+
+    while True:
+        attempt = (max - min) / 2 + min  # TODO what if this causes rounding
+        # assert floor(attempt) == attempt
+        attempt = int(attempt)
+
+        print(f"{min} < n < {max} : ", end="")
+        print(f"Trying {attempt} bytes (last={corruptions[:attempt][-1]}) -> ", end="")
+        corrupt_grid = Matrix([[False for x in range(grid_max + 1)] for y in range(grid_max + 1)])
+        _corrupt_memory(corrupt_grid, corruptions[:attempt])
+        graph = _build_graph(corrupt_grid)
+
+        shortest_paths = _shortest_paths(graph, start)
+        if shortest_paths[end] == 999999999999:
+            max = attempt
+            print("unreachable")
+        else:
+            min = attempt
+            print(f"reachable in {shortest_paths[end]}")
+
+        # print(corrupt_grid.transform(lambda p, s: "#" if s else "."))
+
+        if abs(max - min) < 2:
+            return corruptions[max]
+
+
+def part_2(corruptions: Iterable[Point]):
+    max = 70
+
+    start = Point(0, 0)
+    end = Point(max, max)
+
+    return _binary_search(start, end, list(corruptions))
+
+
+run(18, part_2, parser=get_points)

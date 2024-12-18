@@ -14,3 +14,6 @@ class Point:
 
     def __mul__(self, p):
         return Point(p * self.x, p * self.y)
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
