@@ -91,5 +91,11 @@ class Matrix[T]:
 
             point = point + diff
 
+    def walk_up_to(self, start_point: Point, dir: Point, dist: int):
+        for i in range(dist):
+            p = start_point + dir * i
+            if not self.is_out_of_bounds(p):
+                yield p
+
     def x_y_adjacent(self, p: Point):
         return [p + c for c in _X_Y_DIRECTIONS if not self.is_out_of_bounds(p + c)]

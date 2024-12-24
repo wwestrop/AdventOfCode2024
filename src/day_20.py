@@ -1,6 +1,4 @@
 from collections import defaultdict
-from copy import deepcopy
-from itertools import pairwise
 from typing import Iterable
 from util.types.matrix import Matrix
 from util.types.point import Point
@@ -80,6 +78,8 @@ def _shortest_paths(directed_graph: defaultdict[Point, set[Point]], start: Point
                 dist_from_start[neighbour] = min(dist_from_start[neighbour], curr_node_dist + 1)
 
         unvisited.remove(curr_node)
+        if len(unvisited) % 100 == 0:
+            print(f"Visited {len(directed_graph) - len(unvisited)} / {len(directed_graph)}")
 
     return dist_from_start
 
@@ -95,42 +95,27 @@ def _get_possible_cheats(maze: Matrix[bool]) -> Iterable[tuple[Point, Point, Poi
                         yield w
 
 
-def _build_amended_graph(
-    graph: defaultdict[Point, set[Point]],
-    amended_cheat_edges: tuple[Point, Point, Point],
-):
-    new: defaultdict[Point, set[Point]] = deepcopy(graph)
-    for e in pairwise(amended_cheat_edges):
-        new[e[0]].add(e[1])
-
-    return new
-
-
 def part_1(lines: Iterable[str]):
     raw_cells = Matrix([[x for x in y] for y in lines])
 
     start_point = [c[0] for c in raw_cells.find(lambda p, s: s == "S")][0]
-    end_point = [c[0] for c in raw_cells.find(lambda p, s: s == "E")][0]
 
     passable_cells: Matrix = raw_cells.transform(lambda p, s: s != "#")
 
     basic_maze = _build_graph(passable_cells)
-    basic_cost = _shortest_paths(basic_maze, start_point)[end_point]
+    basic_costs = _shortest_paths(basic_maze, start_point)
 
     cost_diffs: list[int] = []
     possible_cheats = _get_possible_cheats(passable_cells)
 
-    i = 0
     possible_cheats = list(possible_cheats)
 
     for c in possible_cheats:
-        amended = _build_amended_graph(basic_maze, c)
-        cost = _shortest_paths(amended, start_point)[end_point]
-        if basic_cost - cost >= 100:
-            cost_diffs.append(basic_cost - cost)
+        skipped_cost = basic_costs[c[-1]]
+        cost_diff = skipped_cost - basic_costs[c[0]] - 2
 
-        i += 1
-        print(f"Tried cheat {i} / {len(possible_cheats)}")
+        if cost_diff >= 100:
+            cost_diffs.append(cost_diff)
 
     return len(cost_diffs)
 
